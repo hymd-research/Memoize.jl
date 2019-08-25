@@ -2,13 +2,13 @@
 Macro for memoizing recursive functions.
 
 ## Sample
-```Julia>=1.1.1
+```julia
 @memoize function fib(n::T)::BigInt where {T<:Signed}
   n<2 ? n : fib(n-1) + fib(n-2)
 end
 ```
 The function above is going to be evaluated as below.
-```Julia>=1.1.1
+```julia
 function fib(n::T; memo=Dict{T, BigInt}())::BigInt where {T<:Signed}
   if haskey(memo, (n,))
     memo[(n,)]
