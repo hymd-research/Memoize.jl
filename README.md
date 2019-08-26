@@ -9,7 +9,7 @@ end
 ```
 The function above is going to be evaluated as below.
 ```julia
-function fib(n::T; memo=Dict{T, BigInt}())::BigInt where {T<:Signed}
+function fib(n::T; memo=Dict{Tuple{Vararg{T}}, BigInt}())::BigInt where {T<:Signed}
     if haskey(memo, (n,))
         memo[(n,)]
     else
