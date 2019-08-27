@@ -7,7 +7,7 @@ Macro for memoizing recursive functions.
     n<2 ? n : fib(n-1) + fib(n-2)
 end
 ```
-The function above is going to be evaluated as below.
+The function above is to be evaluated as below.
 ```julia
 fib = let memo=Dict{Tuple{T}, BigInt}()
     function fib(n::T)::BigInt where T<:Signed
