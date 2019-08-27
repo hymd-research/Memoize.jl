@@ -8,7 +8,7 @@ Macro for memoizing recursive functions.
 end
 ```
 The function above is going to be evaluated as below.
-```julia
+```diff
 -function fib(n::T; memo=Dict{T, BigInt}())::BigInt where {T<:Signed}
 +fib =
 +let memo=Dict{$(Expr(:curly, :Tuple, f_args_types...)), BigInt}()
