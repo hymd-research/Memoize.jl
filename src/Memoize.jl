@@ -14,23 +14,20 @@ macro memoize(f)
     end
 
 
-    root = head_parser(f.args[1]; head=:where)
-    f_where = let args = root.args[2]
+    Fwhere = let args = head_parser(f.args[1]; head=:where).args[2]
         :($args)
     end
 
-    root = head_parser(f.args[1]; head=:(::))
-    f_type = root.args[2]
-
-    root = head_parser(f.args[1]; head=:call)
-    f_name = root.args[1]
-    f_args = root.args[2:end]
-
-    f_args_types = map(f_args) do args
-        typeof(args)==Symbol ? :Any : args.args[2]
+    fn, fargs = let root = head_parser(f.args[1]; head=:call)
+        root.args[1], root.args[2:end]
     end
 
-    f_block = let root = f.args[2]
+    OutType = head_parser(f.args[1]; head=:(::)).args[2]
+    InTypes = map(fargs) do arg
+        typeof(arg)==Symbol ? :Any : arg.args[2]
+    end
+
+    block = let root = f.args[2]
 
         if typeof(root.args[1])!=Expr
             root.args[2]
@@ -40,14 +37,14 @@ macro memoize(f)
 
     end
 
-    let args=tuple(f_args...)
-        @eval $f_name = let memo = Dict{$(Expr(:curly, :Tuple, f_args_types...)), $f_type}()
-            function $f_name($(args[1]), $(args[2:end] ...))::($f_type) where $f_where
+    let args=tuple(fargs...)
+        @eval $fn = let memo = Dict{$(Expr(:curly, :Tuple, InTypes...)), $OutType}()
+            function $fn($(args[1]), $(args[2:end] ...))::($OutType) where $Fwhere
                 let tpl = ($(args[1]), $(args[2:end] ...))
                     if haskey(memo, tpl)
                         memo[tpl]
                     else
-                        get!(memo, tpl, $f_block)
+                        get!(memo, tpl, $block)
                     end
                 end
             end
