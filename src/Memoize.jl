@@ -36,11 +36,11 @@ macro memoize(f)
         end
 
     end
-
+    
     let args=tuple(fargs...)
         @eval $fn = let memo = Dict{Tuple{Vararg}, $OutType}()
-            function $fn($(args[1]), $(args[2:end] ...))::($OutType) where $Fwhere
-                let tpl = ($(args[1]), $(args[2:end] ...))
+            function $fn($(args...))::($OutType) where $Fwhere
+                let tpl = tuple($(args...))
                     if haskey(memo, tpl)
                         memo[tpl]
                     else
@@ -50,6 +50,7 @@ macro memoize(f)
             end
         end
     end
-
+    
 end
+
 end
