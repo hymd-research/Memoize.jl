@@ -42,7 +42,7 @@ is equal to
 ```julia
 comb = let memo=Dict{Tuple{Vararg}, BigInt}()
     function comb(m::T, n::T)::BigInt where T<:Signed
-        let args=tuple(n::T)
+        let args=tuple(m::t, n::T)
             if haskey(memo, args)
                 memo[args]
             else
