@@ -3,26 +3,26 @@ export @memoize
 
 macro memoize(f)
 
-    head_parser = function(Ex::Union{Expr,Symbol}; head=:call)
+    f_parser = function(Ex::Union{Expr,Symbol}; head=:call)
         if typeof(Ex) != Expr
             return Expr(head, :(nop(nothing)), :Any)
         elseif Ex.head == head
             return Ex
         else
-            return head_parser(Ex.args[1]; head=head)
+            return f_parser(Ex.args[1]; head=head)
         end
     end
 
 
-    Fwhere = let args = head_parser(f.args[1]; head=:where).args[2]
+    Fwhere = let args = f_parser(f.args[1]; head=:where).args[2]
         :($args)
     end
 
-    fn, fargs = let root = head_parser(f.args[1]; head=:call)
+    fn, fargs = let root = f_parser(f.args[1]; head=:call)
         root.args[1], root.args[2:end]
     end
 
-    OutType = head_parser(f.args[1]; head=:(::)).args[2]
+    OutType = ff_parser(f.args[1]; head=:(::)).args[2]
     InTypes = map(fargs) do arg
         typeof(arg)==Symbol ? :Any : arg.args[2]
     end
