@@ -142,7 +142,7 @@ macro showf(f::Expr)
         )
     end
     
-    show(expr, maxdepth=32)
+    show(expr)
 end
 
 end
