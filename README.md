@@ -40,7 +40,7 @@ end
 ```
 is equal to
 ```julia
-comb = let memo=Dict{Tuple{Vararg}, BigInt}()
+comb = let memo=Dict{Tuple{<:Signed, <:Signed}, BigInt}()
     function comb(m::T, n::T)::BigInt where T<:Signed
         let args=tuple(m::T, n::T)
             if haskey(memo, args)
