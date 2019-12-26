@@ -30,18 +30,17 @@ function f_expr(f::Expr)::Expr
     end
 
     OutType = f_parser(f.args[1]; head=:(::)).args[2]
+    
     InTypes = map(fargs) do arg
         typeof(arg)==Symbol ? :Any : arg.args[2]
     end
 
     block = let root = f.args[2]
-
         if typeof(root.args[1])!=Expr
             root.args[2]
         else
             root.args[1]
         end
-
     end
 
     let args = tuple(fargs...), argnames = tuple(nameonly...)
@@ -59,5 +58,5 @@ function f_expr(f::Expr)::Expr
             end
         )
     end
-    
+
 end
