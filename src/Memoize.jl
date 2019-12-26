@@ -38,7 +38,7 @@ macro memoize(f)
     end
     
     let args=tuple(fargs...)
-        @eval Main, $fn = let memo = Dict{Tuple{Vararg}, $OutType}()
+        @eval $fn = let memo = Dict{Tuple{Vararg}, $OutType}()
             function $fn($(args...))::($OutType) where $Fwhere
                 let tpl = tuple($(args...))
                     if haskey(memo, tpl)
