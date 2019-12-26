@@ -3,8 +3,6 @@ export @memoize, @dumpf, @showf
 
 f_parser = function(Ex::Union{Expr,Symbol}; head=:call)
     
-    show(Ex);println();println(typeof(Ex));println(typeof(Ex) != Expr)
-    
     if typeof(Ex) != Expr
         return Expr(:call, :nop(nothing), :Nothing)
     elseif Ex.head == head
@@ -121,7 +119,8 @@ macro showf(f::Expr)
             Symbol("")
         end
     end
-
+    println(Fwhere)
+    
     fn, fargs = let root = f_parser(f.args[1]; head=:call)
         root.args[1], root.args[2:end]
     end
