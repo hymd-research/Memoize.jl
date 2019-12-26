@@ -7,9 +7,12 @@ function f_parser(Ex::Union{Expr,Symbol}; head=:call)::Expr
     else
         return f_parser(Ex.args[1]; head=head)
     end
+    
 end
 
+
 function f_expr(f::Expr)::Expr
+    
     Fwhere = let args = f_parser(f.args[1]; head=:where).args[2]
         if args != :Any
             :(where $args)
@@ -56,3 +59,5 @@ function f_expr(f::Expr)::Expr
             end
         )
     end
+    
+end
