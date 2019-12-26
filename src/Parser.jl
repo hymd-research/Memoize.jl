@@ -72,7 +72,7 @@ function f_expr(f::Expr)::Expr
     OutType = f_parser(f.args[1]; head=:(::)).args[2]
     
     InTypes = map(fargs) do arg
-        symbol = typeof(arg)==Symbol ? :Any : arg.args[2]
+        symbol = typeof(arg)==Symbol ? arg : arg.args[2]
         if typeof(type_annotations) == Bool
             symbol
         elseif haskey(type_annotations, symbol)
