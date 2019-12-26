@@ -9,7 +9,7 @@ end
 ```
 The function above is to be evaluated as below.
 ```julia
-fib = let memo=Dict{Tuple{Vararg}, BigInt}()
+fib = let memo=Dict{Tuple{<:Signed}, BigInt}()
     function fib(n::T)::BigInt where T<:Signed
         let args=tuple(n::T)
             if haskey(memo, args)
