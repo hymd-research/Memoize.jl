@@ -22,7 +22,7 @@ macro memoize(f)
         root.args[1], root.args[2:end]
     end
 
-    OutType = ff_parser(f.args[1]; head=:(::)).args[2]
+    OutType = f_parser(f.args[1]; head=:(::)).args[2]
     InTypes = map(fargs) do arg
         typeof(arg)==Symbol ? :Any : arg.args[2]
     end
