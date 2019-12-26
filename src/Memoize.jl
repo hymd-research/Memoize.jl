@@ -119,7 +119,6 @@ macro showf(f::Expr)
             Symbol("")
         end
     end
-    println(Fwhere)
     
     fn, fargs = let root = f_parser(f.args[1]; head=:call)
         root.args[1], root.args[2:end]
