@@ -18,7 +18,7 @@ function f_template(
         argnames::Tuple{Vararg{Symbol}}, 
         block::Union{Expr, Symbol})::Expr
     
-    tenplate = :(
+    template = :(
         let tpl = tuple($(argnames...))
             if haskey(memo, tpl)
                 memo[tpl]
