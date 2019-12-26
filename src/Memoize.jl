@@ -1,6 +1,10 @@
 module Memoize
 export @memoize
 
+macro esc(ex::Expr)
+    esc(ex)
+end
+
 macro memoize(f)
 
     f_parser = function(Ex::Union{Expr,Symbol}; head=:call)
@@ -38,7 +42,7 @@ macro memoize(f)
     end
     
     let args=tuple(fargs...)
-        @eval $fn = let memo = Dict{Tuple{Vararg}, $OutType}()
+        @esc $fn = let memo = Dict{Tuple{Vararg}, $OutType}()
             function $fn($(args...))::($OutType) where $Fwhere
                 let tpl = tuple($(args...))
                     if haskey(memo, tpl)
