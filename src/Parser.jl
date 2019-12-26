@@ -77,7 +77,7 @@ function f_expr(f::Expr)::Expr
             symbol
         elseif haskey(type_annotations, symbol)
             op, tp = get(type_annotations, symbol, (:(<:), :Any))
-            Expr(ob, tp)
+            Expr(op, tp)
         end
     end
 
