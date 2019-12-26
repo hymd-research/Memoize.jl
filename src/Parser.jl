@@ -50,6 +50,10 @@ end
 
 function f_expr(f::Expr)::Expr
     
+    if f.head != :function
+        throw(ParseError("First keyword must be :function given $(f.head)"))
+    end
+    
     whstmt = let node=f.args[1], annotations = []
         while node.head==:where
             typeinfo = f_parser(node; head=:where).args[2]
