@@ -42,7 +42,7 @@ function f_template(
         end
     end
         
-    push!(f_header.args[2], template)
+    push!(f_header.args[2].args, template)
         
     f_header
     
