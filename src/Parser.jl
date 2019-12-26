@@ -76,7 +76,7 @@ function f_expr(f::Expr)::Expr
         if typeof(type_annotations) == Bool
             symbol
         elseif haskey(type_annotations, symbol)
-            op, tp = get(type_annotations, (:(<:), :Any))
+            op, tp = get(type_annotations, symbol, (:(<:), :Any))
             Expr(ob, tp)
         end
     end
