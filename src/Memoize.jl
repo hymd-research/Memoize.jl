@@ -4,7 +4,7 @@ export @memoize, @dumpf, @showf
 f_parser = function(Ex::Union{Expr,Symbol}; head=:call)
     
     if typeof(Ex) != Expr
-        return Expr(:call, :(nop(nothing)), :Nothing)
+        return Expr(:call, :(nop(nothing)), :Any)
     elseif Ex.head == head
         return Ex
     else
@@ -16,7 +16,7 @@ macro memoize(f::Expr)
 
 
     Fwhere = let args = f_parser(f.args[1]; head=:where).args[2]
-        if args != :Nothing
+        if args != :Any
             :(where $args)
         else
             Symbol("")
@@ -65,7 +65,7 @@ end
 macro dumpf(f::Expr)
     
     Fwhere = let args = f_parser(f.args[1]; head=:where).args[2]
-        if args != :Nothing
+        if args != :Any
             :(where $args)
         else
             Symbol("")
@@ -113,7 +113,7 @@ end
 macro showf(f::Expr)
     
     Fwhere = let args = f_parser(f.args[1]; head=:where).args[2]
-        if args != :Nothing
+        if args != :Any
             :(where $args)
         else
             Symbol("")
@@ -122,6 +122,10 @@ macro showf(f::Expr)
     
     fn, fargs = let root = f_parser(f.args[1]; head=:call)
         root.args[1], root.args[2:end]
+    end
+    
+    nameonly = map(fargs) do arg
+        typeof(arg) == Expr ? arg.args[1] : arg
     end
 
     OutType = f_parser(f.args[1]; head=:(::)).args[2]
@@ -139,11 +143,11 @@ macro showf(f::Expr)
 
     end
     
-    expr = let args = tuple(fargs...)
+    expr = let args = tuple(fargs...), argnames = tuple(nameonly...)
         :(
-            $fn = let memo = Dict{Tuple{Vararg}, $OutType}()
+            $fn = let memo = Dict{Tuple{$(InTypes...)}, $OutType}()
                 function $fn($(args...))::($OutType) $Fwhere
-                    let tpl = tuple($(args...))
+                    let tpl = tuple($(argnames...))
                         if haskey(memo, tpl)
                             memo[tpl]
                         else 
