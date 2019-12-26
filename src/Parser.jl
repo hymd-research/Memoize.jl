@@ -55,7 +55,7 @@ end
 function f_expr(f::Expr)::Expr
     
     if f.head != :function
-        throw(ParseError("First keyword must be :function given $(f.head)"))
+        throw(Meta.ParseError("First keyword must be :function given $(f.head)"))
     end
     
     whstmt = let node=f.args[1], annotations = []
