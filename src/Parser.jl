@@ -77,6 +77,7 @@ function f_expr(f::Expr)::Expr
         elseif haskey(type_annotations, symbol)
             op, tp = get(type_annotations, symbol)
             Expr(ob, tp)
+        end
     end
 
     block = let root = f.args[2]
