@@ -16,7 +16,7 @@ function f_template(
         output::Symbol, 
         whstmt::Array{T, 1} where T, 
         argnames::Tuple{Vararg{Symbol}}, 
-        block::Expr)::Expr
+        block::Union{Expr, Symbol})::Expr
     
     tenplate = :(
         let tpl = tuple($(argnames...))
