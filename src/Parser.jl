@@ -29,9 +29,13 @@ function f_template(
     )
     
     f_header = if (output == :Any) && isempty(whstmt)
-        :(function $fn($(fargs...)) end)
+        let call = :($fn($(fargs...)))
+            :(function $call end)
+        end
     elseif whstmt == isempty(whstmt)
-        :(function $fn($(fargs...))::$output end)
+        let call = :($fn($(fargs...))::$output)
+            :(function $call end)
+        end
     else
         let call = :($fn($(fargs...))::$output)
             while !isempty(whstmt)
@@ -42,7 +46,7 @@ function f_template(
         end
     end
         
-    push!(f_header.args[2].args, template)
+    push!(f_header.args, template)
         
     f_header
     
