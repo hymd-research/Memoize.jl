@@ -57,7 +57,7 @@ macro memoize(f)
     
 end
 
-macro dumpf(exf::Expr)
+macro dumpf(f::Expr)
     
     Fwhere = let args = f_parser(f.args[1]; head=:where).args[2]
         :($args)
