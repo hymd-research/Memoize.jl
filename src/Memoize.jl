@@ -3,7 +3,7 @@ export @memoize, @dumpf, @showf
 
 f_parser = function(Ex::Union{Expr,Symbol}; head=:call)
         if typeof(Ex) != Expr
-            return Expr(head, :(nop(nothing)), :Any)
+            return :Nothing
         elseif Ex.head == head
             return Ex
         else
@@ -15,7 +15,10 @@ macro memoize(f::Expr)
 
 
     Fwhere = let args = f_parser(f.args[1]; head=:where).args[2]
-        :($args)
+        if args != :Nothing
+            :(where $args)
+        else
+            Symbol("")
     end
 
     fn, fargs = let root = f_parser(f.args[1]; head=:call)
@@ -41,7 +44,7 @@ macro memoize(f::Expr)
         esc(
             :(
                 $fn = let memo = Dict{Tuple{Vararg}, $OutType}()
-                    function $fn($(args...))::($OutType) where $Fwhere
+                    function $fn($(args...))::($OutType) $Fwhere
                         let tpl = tuple($(args...))
                             if haskey(memo, tpl)
                                 memo[tpl]
