@@ -1,7 +1,7 @@
 function f_parser(Ex::Union{Expr,Symbol}; head=:call)::Expr
     
     if typeof(Ex) != Expr
-        return Expr(:call, :(nop(nothing)), :Any)
+        return Expr(:(::), :(nop(nothing)), :Nothiing)
     elseif Ex.head == head
         return Ex
     else
@@ -10,21 +10,75 @@ function f_parser(Ex::Union{Expr,Symbol}; head=:call)::Expr
     
 end
 
+function f_template(
+        fn::Symbol, 
+        fargs::Array{T, 1} where T, 
+        output::Symbol, 
+        whstmt::Union{Expr, Symbol}, 
+        argnames::Tuple{Vararg{Symbol}}, 
+        block::Expr)::Expr
+    
+    if (output == :Any) && (whstmt == :Nothing)
+        :(
+            function $fn($(fargs...))
+                let tpl = tuple($(argnames...))
+                    if haskey(memo, tpl)
+                        memo[tpl]
+                    else 
+                        get!(memo, tpl, $block)
+                    end
+                end
+            end
+        )  
+    elseif whstmt == :Nothing
+        :(
+            function $fn($(fargs...))::$output
+                let tpl = tuple($(argnames...))
+                    if haskey(memo, tpl)
+                        memo[tpl]
+                    else 
+                        get!(memo, tpl, $block)
+                    end
+                end
+            end
+        )
+        
+    elseif output == :Nothing
+        :(
+            function $fn($(fargs...)) where $whstmt
+                let tpl = tuple($(argnames...))
+                    if haskey(memo, tpl)
+                        memo[tpl]
+                    else 
+                        get!(memo, tpl, $block)
+                    end
+                end
+            end
+        )
+    else
+        :(
+            function $fn($(fargs...))::$output where $whstmt
+                let tpl = tuple($(argnames...))
+                    if haskey(memo, tpl)
+                        memo[tpl]
+                    else 
+                        get!(memo, tpl, $block)
+                    end
+                end
+            end
+         )
+    end
+    
+end
 
 function f_expr(f::Expr)::Expr
     
-    Fwhere = let args = f_parser(f.args[1]; head=:where).args[2]
-        if args != :Any
-            :(where $args)
-        else
-            Symbol("")
-        end
-    end
+    whstmt = f_parser(f.args[1]; head=:where).args[2]
 
     fn, fargs = let root = f_parser(f.args[1]; head=:call)
         root.args[1], root.args[2:end]
     end
-
+    
     nameonly = map(fargs) do arg
         typeof(arg) == Expr ? arg.args[1] : arg
     end
@@ -43,18 +97,10 @@ function f_expr(f::Expr)::Expr
         end
     end
 
-    let args = tuple(fargs...), argnames = tuple(nameonly...)
+    let argnames = tuple(nameonly...)
         :(
             $fn = let memo = Dict{Tuple{$(InTypes...)}, $OutType}()
-                function $fn($(args...))::($OutType) $Fwhere
-                    let tpl = tuple($(argnames...))
-                        if haskey(memo, tpl)
-                            memo[tpl]
-                        else 
-                            get!(memo, tpl, $block)
-                        end
-                    end
-                end
+                $(f_template(fn, fargs, OutType, whstmt, argnames, block))
             end
         )
     end
