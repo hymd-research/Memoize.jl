@@ -2,14 +2,14 @@ module Memoize
 export @memoize, @dumpf, @showf
 
 f_parser = function(Ex::Union{Expr,Symbol}; head=:call)
-        if typeof(Ex) != Expr
-            return :Nothing
-        elseif Ex.head == head
-            return Ex
-        else
-            return f_parser(Ex.args[1]; head=head)
-        end
+    if typeof(Ex) != Expr
+        return :Nothing
+    elseif Ex.head == head
+        return Ex
+    else
+        return f_parser(Ex.args[1]; head=head)
     end
+end
 
 macro memoize(f::Expr)
 
@@ -19,6 +19,7 @@ macro memoize(f::Expr)
             :(where $args)
         else
             Symbol("")
+        end
     end
 
     fn, fargs = let root = f_parser(f.args[1]; head=:call)
