@@ -98,7 +98,7 @@ macro dumpf(f::Expr)
         )
     end
     
-    dump(expr)
+    dump(expr, maxdepth=32)
 end
 
 end
