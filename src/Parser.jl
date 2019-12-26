@@ -42,7 +42,7 @@ function f_template(
         end
     end
         
-    f_header.args[2] = templete
+    f_header.args[2] = template
         
     f_header
     
