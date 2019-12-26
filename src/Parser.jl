@@ -1,7 +1,7 @@
 function f_parser(Ex::Union{Expr,Symbol}; head=:call)::Expr
     
     if typeof(Ex) != Expr
-        return Expr(:(::), :(nop(nothing)), :Nothiing)
+        return Expr(:(::), :(nop(nothing)), :Any)
     elseif Ex.head == head
         return Ex
     else
@@ -18,7 +18,7 @@ function f_template(
         argnames::Tuple{Vararg{Symbol}}, 
         block::Expr)::Expr
     
-    if (output == :Any) && (whstmt == :Nothing)
+    if (output == :Any) && (whstmt == :Any)
         :(
             function $fn($(fargs...))
                 let tpl = tuple($(argnames...))
@@ -30,7 +30,7 @@ function f_template(
                 end
             end
         )  
-    elseif whstmt == :Nothing
+    elseif whstmt == :Any
         :(
             function $fn($(fargs...))::$output
                 let tpl = tuple($(argnames...))
@@ -43,7 +43,7 @@ function f_template(
             end
         )
         
-    elseif output == :Nothing
+    elseif output == :Any
         :(
             function $fn($(fargs...)) where $whstmt
                 let tpl = tuple($(argnames...))
