@@ -4,7 +4,7 @@ export @memoize, @dumpf, @showf
 f_parser = function(Ex::Union{Expr,Symbol}; head=:call)
     
     if typeof(Ex) != Expr
-        return Expr(:call, :nop(nothing), :Nothing)
+        return Expr(:call, :(nop(nothing)), :Nothing)
     elseif Ex.head == head
         return Ex
     else
