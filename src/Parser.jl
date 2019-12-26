@@ -18,56 +18,33 @@ function f_template(
         argnames::Tuple{Vararg{Symbol}}, 
         block::Expr)::Expr
     
-    if (output == :Any) && isempty(whstmt)
-        :(
-            function $fn($(fargs...))
-                let tpl = tuple($(argnames...))
-                    if haskey(memo, tpl)
-                        memo[tpl]
-                    else 
-                        get!(memo, tpl, $block)
-                    end
-                end
+    tenplate = :(
+        let tpl = tuple($(argnames...))
+            if haskey(memo, tpl)
+                memo[tpl]
+            else
+                get!(memo, tpl, $block)
             end
-        )  
+        end
+    )
+    
+    f_header = if (output == :Any) && isempty(whstmt)
+        :(function $fn($(fargs...)) end)
     elseif whstmt == isempty(whstmt)
-        :(
-            function $fn($(fargs...))::$output
-                let tpl = tuple($(argnames...))
-                    if haskey(memo, tpl)
-                        memo[tpl]
-                    else 
-                        get!(memo, tpl, $block)
-                    end
-                end
-            end
-        )
-        
-    elseif output == :Any
-        :(
-            function $fn($(fargs...)) where $whstmt
-                let tpl = tuple($(argnames...))
-                    if haskey(memo, tpl)
-                        memo[tpl]
-                    else 
-                        get!(memo, tpl, $block)
-                    end
-                end
-            end
-        )
+        :(function $fn($(fargs...))::$output end)
     else
-        :(
-            function $fn($(fargs...))::$output where $whstmt
-                let tpl = tuple($(argnames...))
-                    if haskey(memo, tpl)
-                        memo[tpl]
-                    else 
-                        get!(memo, tpl, $block)
-                    end
-                end
+        let call = :($fn($(fargs...))::$output)
+            while !isempty(whstmt)
+                annotation = pop!(whstmt)
+                call = :($call where $annotation)
             end
-         )
+            :(function $call end)
+        end
     end
+        
+    f_header.args[2] = templete
+        
+    f_header
     
 end
 
