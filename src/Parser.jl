@@ -54,6 +54,7 @@ function f_expr(f::Expr)::Expr
         while node.head==:where
             typeinfo = f_parser(node; head=:where).args[2]
             push!(annotations, typeinfo)
+            node = node.args[1]
         end
         annotations
     end
