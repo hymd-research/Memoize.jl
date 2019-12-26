@@ -2,8 +2,10 @@ module Memoize
 export @memoize, @dumpf, @showf
 
 f_parser = function(Ex::Union{Expr,Symbol}; head=:call)
+    
+    show(Ex);println();println(typeof(Ex))
+    
     if typeof(Ex) != Expr
-        show(Ex);println()
         return Expr(:call, :nop(nothing), :Nothing)
     elseif Ex.head == head
         return Ex
