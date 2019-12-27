@@ -10,13 +10,16 @@ end
 The function above is to be evaluated as below.
 ```julia
 function fib(n::T)::BigInt where T<:Signed
-    let memo=Dict{Tuple{<:Signed}, BigInt}()
+
+    let cache = Dict{Tuple{<:Signed}, BigInt}()
+    
         let fib = function fib(n::T)::BigInt where T<:Signed
+        
             let args=tuple(n)
-                if haskey(memo, args)
-                    memo[args]
+                if haskey(cache, args)
+                    cache[args]
                 else
-                    get!(memo, args, if n<2
+                    get!(cache, args, if n<2
                                 n
                             else
                                 fib(n-1)+fib(n-2)
@@ -26,7 +29,9 @@ function fib(n::T)::BigInt where T<:Signed
             
             fib(n)
         end
+        
     end
+    
 end
 ```
 `@memoize` also works with Multiple argument function.
@@ -45,13 +50,16 @@ end
 is equal to
 ```julia
 function comb(m::T, n::T)::BigInt where T<:Signed
-    let memo=Dict{Tuple{<:Signed, <:Signed}, BigInt}()
+
+    let cache = Dict{Tuple{<:Signed, <:Signed}, BigInt}()
+    
         let comb = function comb(m::T, n::T)::BigInt where T<:Signed
+        
             let args=tuple(m::T, n::T)
-                if haskey(memo, args)
-                    memo[args]
+                if haskey(cache, args)
+                    cache[args]
                 else
-                    get!(memo, args, if m<n
+                    get!(cache, args, if m<n
                                 0
                             elseif m==0 || n==0
                                 1
@@ -60,8 +68,11 @@ function comb(m::T, n::T)::BigInt where T<:Signed
                             end)
                 end
             end
+            
+            comb(m, n)
         end
-        comb(m, n)
+ 
     end
+    
 end
  ```
