@@ -99,7 +99,7 @@ function f_expr(f::Expr)::Expr
 
     let argnames = tuple(nameonly...)
         :(
-            $fn = let memo = Dict{Tuple{$(InTypes...)}, $OutType}()
+            $fn = let cache = Dict{Tuple{$(InTypes...)}, $OutType}()
                 $(f_template(fn, fargs, OutType, whstmt, argnames, block))
             end
         )
