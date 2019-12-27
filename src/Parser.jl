@@ -1,9 +1,9 @@
 struct FunctionExpr
-    fn::Symbol,
-    fargs::Array{T,1} where T,
-    output::Symbol,
-    whstmt::Array{T,1} where T,
-    argnames::Tuple{Vararg{Symbol}},
+    fn::Symbol
+    fargs::Array{T,1} where T
+    output::Symbol
+    whstmt::Array{T,1} where T
+    argnames::Tuple{Vararg{Symbol}}
     template::Union{Expr, Symbol}
 end
 
@@ -22,15 +22,15 @@ end
 function f_header(e::FunctionExpr)::Expr
     
     if (e.output == :Any) && isempty(e.whstmt)
-        let call = :($fn($(e.fargs...)))
+        let call = :($(e.fn)($(e.fargs...)))
             :(function $call end)
         end
     elseif isempty(e.whstmt)
-        let call = :($fn($(e.fargs...))::$e.output)
+        let call = :($(e.fn)($(e.fargs...))::$(e.output))
             :(function $call end)
         end
     else
-        let call = :($fn($(e.fargs...))::$e.output), cpwhere = copy(e.whstmt)
+        let call = :($(e.fn)($(e.fargs...))::$(e.output)), cpwhere = copy(e.whstmt)
             while !isempty(cpwhere)
                 annotation = pop!(cpwhere)
                 call = :($call where $annotation)
@@ -40,7 +40,6 @@ function f_header(e::FunctionExpr)::Expr
     end
     
 end
-
 
 function f_closure(e::FunctionExpr)::Expr
     
@@ -53,13 +52,14 @@ function f_closure(e::FunctionExpr)::Expr
     
 end
 
+
 function f_expr(f::Expr)::Expr
     
     if f.head != :function
         throw(Meta.ParseError("First keyword must be :function given $(f.head)"))
     end
     
-    whstmt = let node=f.args[1], annotations = []
+    whstmt = let node = f.args[1], annotations = []
         while node.head==:where
             typeinfo = f_parser(node; head=:where).args[2]
             push!(annotations, typeinfo)
@@ -87,31 +87,25 @@ function f_expr(f::Expr)::Expr
     OutType = f_parser(f.args[1]; head=:(::)).args[2]
     
     InTypes = map(fargs) do arg
-        name = typeof(arg)==Symbol ? :Any : f_parser(arg, head=:(::)).args[2]
-        if isempty(type_annotations) || !haskey(type_annotations, name)
-            name
-        else
-            op, tp = get(type_annotations, name, (:(<:), :Any))
-            Expr(op, tp)
+        let name = typeof(arg)==Symbol ? :Any : f_parser(arg, head=:(::)).args[2]
+            if isempty(type_annotations) || !haskey(type_annotations, name)
+                name
+            else
+                op, tp = get(type_annotations, name, (:(<:), :Any))
+                Expr(op, tp)
+            end
         end
     end
-
-        let = block = let root = f.args[2]
+    
+   template = let block = 
+        let root = f.args[2]
             if typeof(root.args[1])!=Expr
                 root.args[2]
             else
                 root.args[1]
             end
         end
-    
-    template = let = block = 
-            let root = f.args[2]
-                if typeof(root.args[1])!=Expr
-                    root.args[2]
-                else
-                    root.args[1]
-                end
-            end
+
             
         :(
             let tpl = tuple($(argnames...))
@@ -125,10 +119,10 @@ function f_expr(f::Expr)::Expr
                 end
             end
         )
-        end
+
     end
 
-    let fexpr = FunctionType(fn, fargs, OutType, copy(whstmt), argnames, template)
+    let fexpr = FunctionExpr(fn, fargs, OutType, copy(whstmt), argnames, template)
         let f_decstmt = f_header(fexpr), f_block = f_closure(fexpr)
             push!(
                 f_decstmt.args,
