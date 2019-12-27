@@ -67,7 +67,11 @@ function f_expr(f::Expr)::Expr
         annotations
     end
     
-    type_annotations = !isempty(whstmt) && Dict(ex.args[1] => (ex.head, ex.args[2]) for ex in whstmt)
+    type_annotations = if isempty(whstmt) 
+        Dict()
+    else
+        Dict(ex.args[1] => (ex.head, ex.args[2]) for ex in whstmt)
+    end
 
     fn, fargs = let root = f_parser(f.args[1]; head=:call)
         root.args[1], root.args[2:end]
@@ -81,9 +85,9 @@ function f_expr(f::Expr)::Expr
     
     InTypes = map(fargs) do arg
         name = typeof(arg)==Symbol ? :Any : f_parser(arg, head=:(::)).args[2]
-        if typeof(type_annotations) == Bool
+        if isempty(type_annotations) || !haskey(type_annotations, name)
             name
-        elseif haskey(type_annotations, name)
+        else
             op, tp = get(type_annotations, name, (:(<:), :Any))
             Expr(op, tp)
         end
