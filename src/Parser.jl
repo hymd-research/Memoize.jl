@@ -20,8 +20,8 @@ function f_template(
     
     template = :(
         let tpl = tuple($(argnames...))
-            if haskey(memo, tpl)
-                memo[tpl]
+            if haskey(cache, tpl)
+                cache[tpl]
             else
                 get!(memo, tpl, $block)
             end
