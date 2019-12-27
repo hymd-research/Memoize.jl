@@ -23,7 +23,7 @@ function f_template(
             if haskey(cache, tpl)
                 cache[tpl]
             else
-                get!(memo, tpl, $block)
+                get!(cache, tpl, $block)
             end
         end
     )
