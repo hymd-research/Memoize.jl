@@ -75,7 +75,7 @@ function HyperOperator(a::T, b::T, n::T)::Int where T<:Signed
 
     let cache = Dict{Tuple{<:Signed, <:Signed, <:Signed}, BigInt}()
     
-        let comb = function comb(a::T, b::T, n::T)::Int where T<:Signed
+        let HyperOperator = function HyperOperator(a::T, b::T, n::T)::Int where T<:Signed
         
             let args=tuple(m::T, n::T)
                 if haskey(cache, args)
