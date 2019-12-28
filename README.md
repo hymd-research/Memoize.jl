@@ -37,7 +37,7 @@ end
 `@memoize` also works with Multiple argument function.
 Example: [HyperOperator](https://en.wikipedia.org/wiki/Hyperoperation)
 ```julia
-@memoize function HyperOperator(a::T, b::T, n::T)::T where T<:Signed
+@memoize function Hyper(n::T, a::T, b::T)::T where T<:Signed
     
     let succ(n::Int)::Int = n+1, inf(n::Int)::Int = n-1
         if n == 0
@@ -45,23 +45,23 @@ Example: [HyperOperator](https://en.wikipedia.org/wiki/Hyperoperation)
             if b == 0
                 1
             else
-                 succ(HyperOperator(a, inf(b), 0))
+                 succ(Hyper(0, a, inf(b)))
             end
 
         elseif n==1
 
             if b==0
-                HyperOperator(1, inf(a), 0)
+                Hyper(0, 1, inf(a))
             else
-                HyperOperator(a, HyperOperator(a, inf(b), n), 0)
+                Hyper(0, a, Hyper(n, a, inf(b)))
             end
 
         else
 
             if b==1
-                HyperOperator(1, inf(a), 0)
+                Hyper(0, 1, inf(a))
             else
-                HyperOperator(HyperOperator(a, inf(b), n), a, inf(n))
+                Hyper(inf(n), Hyper(n, a, inf(b)), a)
             end
 
         end
@@ -71,11 +71,11 @@ end
 ```
 is equal to
 ```julia
-function HyperOperator(a::T, b::T, n::T)::Int where T<:Signed
+function Hyper(n::T, a::T, b::T)::T where T<:Signed
 
     let cache = Dict{Tuple{<:Signed, <:Signed, <:Signed}, BigInt}()
     
-        let HyperOperator = function HyperOperator(a::T, b::T, n::T)::Int where T<:Signed
+        let HyperOperator = function Hyper(n::T, a::T, b::T)::T where T<:Signed
         
             let args=tuple(a, b, n)
                 if haskey(cache, args)
@@ -84,37 +84,37 @@ function HyperOperator(a::T, b::T, n::T)::Int where T<:Signed
                     get!(
                         cache, args, 
                         let succ(n::Int)::Int = n+1, inf(n::Int)::Int = n-1
-                            if n == 0
+                                if n == 0
 
-                                if b == 0
-                                    1
+                                    if b == 0
+                                        1
+                                    else
+                                         succ(Hyper(0, a, inf(b)))
+                                    end
+
+                                elseif n==1
+
+                                    if b==0
+                                        Hyper(0, 1, inf(a))
+                                    else
+                                        Hyper(0, a, Hyper(n, a, inf(b)))
+                                    end
+
                                 else
-                                     succ(HyperOperator(a, inf(b), 0))
+
+                                    if b==1
+                                        Hyper(0, 1, inf(a))
+                                    else
+                                        Hyper(inf(n), Hyper(n, a, inf(b)), a)
+                                    end
+
                                 end
-
-                            elseif n==1
-
-                                if b==0
-                                    HyperOperator(1, inf(a), 0)
-                                else
-                                    HyperOperator(a, HyperOperator(a, inf(b), n), 0)
-                                end
-
-                            else
-
-                                if b==1
-                                    HyperOperator(1, inf(a), 0)
-                                else
-                                    HyperOperator(HyperOperator(a, inf(b), n), a, inf(n))
-                                end
-
                             end
-                        end
                     )
                 end
             end
             
-            HyperOperator(a, b, n)
+            Hyper(n, a, b)
         end
  
     end
