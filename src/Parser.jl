@@ -106,19 +106,20 @@ function f_expr(f::Expr)::Expr
             end
         end
 
-            
-        :(
-            let args = tuple($(argnames...))
-                if haskey(cache, args)
-                    cache[args]
-                else
-                    get!(
-                        cache, args, 
-                        $block
-                    )
+        let f_block = block.head == :return ? block.args : block    
+            :(
+                let args = tuple($(argnames...))
+                    if haskey(cache, args)
+                        cache[args]
+                    else
+                        get!(
+                            cache, args, 
+                            $f_block
+                        )
+                    end
                 end
-            end
-        )
+            )
+        end
 
     end
 
