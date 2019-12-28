@@ -37,7 +37,7 @@ end
 `@memoize` also works with Multiple argument function.
 Example: [HyperOperator](https://en.wikipedia.org/wiki/Hyperoperation)
 ```julia
-@memoize function Hyper(a::T, b::T, n::T)::T where T<:Signed
+@memoize function HyperOperator(a::T, b::T, n::T)::T where T<:Signed
     
     let succ(n::Int)::Int = n+1, inf(n::Int)::Int = n-1
         if n == 0
@@ -51,17 +51,17 @@ Example: [HyperOperator](https://en.wikipedia.org/wiki/Hyperoperation)
         elseif n==1
 
             if b==0
-                Hyper(1, inf(a), 0)
+                HyperOperator(1, inf(a), 0)
             else
-                Hyper(a, Hyper(a, inf(b), n), 0)
+                HyperOperator(a, HyperOperator(a, inf(b), n), 0)
             end
 
         else
 
             if b==1
-                Hyper(1, inf(a), 0)
+                HyperOperator(1, inf(a), 0)
             else
-                Hyper(Hyper(a, inf(b), n), a, inf(n))
+                HyperOperator(HyperOperator(a, inf(b), n), a, inf(n))
             end
 
         end
