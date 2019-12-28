@@ -77,7 +77,7 @@ function HyperOperator(a::T, b::T, n::T)::Int where T<:Signed
     
         let HyperOperator = function HyperOperator(a::T, b::T, n::T)::Int where T<:Signed
         
-            let args=tuple(m::T, n::T)
+            let args=tuple(a, b, n)
                 if haskey(cache, args)
                     cache[args]
                 else
