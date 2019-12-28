@@ -106,7 +106,7 @@ function f_expr(f::Expr)::Expr
             end
         end
 
-        let f_block = block.head == :return ? block.args : block    
+        let f_block = block.head == :return ? block.args[1] : block    
             :(
                 let args = tuple($(argnames...))
                     if haskey(cache, args)
