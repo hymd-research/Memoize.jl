@@ -45,7 +45,7 @@ Example: [HyperOperator](https://en.wikipedia.org/wiki/Hyperoperation)
             if b == 0
                 1
             else
-                 succ(Hyper(a, inf(b), 0))
+                 succ(HyperOperator(a, inf(b), 0))
             end
 
         elseif n==1
@@ -89,23 +89,23 @@ function HyperOperator(a::T, b::T, n::T)::Int where T<:Signed
                                 if b == 0
                                     1
                                 else
-                                     succ(Hyper(a, inf(b), 0))
+                                     succ(HyperOperator(a, inf(b), 0))
                                 end
 
                             elseif n==1
 
                                 if b==0
-                                    Hyper(1, inf(a), 0)
+                                    HyperOperator(1, inf(a), 0)
                                 else
-                                    Hyper(a, Hyper(a, inf(b), n), 0)
+                                    HyperOperator(a, HyperOperator(a, inf(b), n), 0)
                                 end
 
                             else
 
                                 if b==1
-                                    Hyper(1, inf(a), 0)
+                                    HyperOperator(1, inf(a), 0)
                                 else
-                                    Hyper(Hyper(a, inf(b), n), a, inf(n))
+                                    HyperOperator(HyperOperator(a, inf(b), n), a, inf(n))
                                 end
 
                             end
