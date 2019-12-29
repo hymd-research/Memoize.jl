@@ -83,29 +83,29 @@ function Hyper(n::T, a::T, b::T)::T where T<:Signed
                     else
                         get!(
                             cache, args, 
-                            let suc(n::Int)::Int = n+1, inf(n::Int)::Int = n-1
+                            let suc(n::Int)::Int = n+1, pred(n::Int)::Int = n-1
                                 if n == 0
 
                                     if b == 0
                                         1
                                     else
-                                        suc(Hyper(0, a, inf(b)))
+                                        suc(Hyper(0, a, pred(b)))
                                     end
 
                                 elseif n==1
 
                                     if b==0
-                                        Hyper(0, 1, inf(a))
+                                        Hyper(0, 1, pred(a))
                                     else
-                                        Hyper(0, a, Hyper(n, a, inf(b)))
+                                        Hyper(0, a, Hyper(n, a, pred(b)))
                                     end
 
                                 else
 
                                     if b==1
-                                        Hyper(0, 1, inf(a))
+                                        Hyper(0, 1, pred(a))
                                     else
-                                        Hyper(inf(n), Hyper(n, a, inf(b)), a)
+                                        Hyper(pred(n), Hyper(n, a, pred(b)), a)
                                     end
 
                                 end
