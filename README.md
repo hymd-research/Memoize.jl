@@ -77,19 +77,19 @@ function Hyper(n::T, a::T, b::T)::T where T<:Signed
     
         let HyperOperator = function Hyper(n::T, a::T, b::T)::T where T<:Signed
         
-            let args=tuple(a, b, n)
-                if haskey(cache, args)
-                    cache[args]
-                else
-                    get!(
-                        cache, args, 
-                        let succ(n::Int)::Int = n+1, inf(n::Int)::Int = n-1
+                let args=tuple(a, b, n)
+                    if haskey(cache, args)
+                        cache[args]
+                    else
+                        get!(
+                            cache, args, 
+                            let succ(n::Int)::Int = n+1, inf(n::Int)::Int = n-1
                                 if n == 0
 
                                     if b == 0
                                         1
                                     else
-                                         succ(Hyper(0, a, inf(b)))
+                                        succ(Hyper(0, a, inf(b)))
                                     end
 
                                 elseif n==1
@@ -110,13 +110,14 @@ function Hyper(n::T, a::T, b::T)::T where T<:Signed
 
                                 end
                             end
-                    )
+                        )
+                    end
                 end
             end
             
-            Hyper(n, a, b)
+            print(Hyper(n, a, b))
         end
- 
+    
     end
     
 end
