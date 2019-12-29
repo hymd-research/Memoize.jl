@@ -115,7 +115,7 @@ function Hyper(n::T, a::T, b::T)::T where T<:Signed
                 end
             end
             
-            print(Hyper(n, a, b))
+            Hyper(n, a, b)
         end
     
     end
