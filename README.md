@@ -75,7 +75,7 @@ function Hyper(n::T, a::T, b::T)::T where T<:Signed
 
     let cache = Dict{Tuple{<:Signed, <:Signed, <:Signed}, BigInt}()
     
-        let HyperOperator = function Hyper(n::T, a::T, b::T)::T where T<:Signed
+        let Hyper = function Hyper(n::T, a::T, b::T)::T where T<:Signed
         
                 let args=tuple(a, b, n)
                     if haskey(cache, args)
